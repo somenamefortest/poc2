@@ -17,29 +17,28 @@ jobs:
       with:
         fetch-depth: 0
     - name: Run TruffleHog
-      id: trufflehog
-      # We use a 'run' step to call the docker image directly so we can use '>'
+      uses: trufflesecurity/trufflehog@main
       continue-on-error: true
-      run: |
-        docker run --rm -v ${{ github.workspace }}:/pwd \
-        ghcr.io/trufflesecurity/trufflehog:latest \
-        filesystem /pwd --json --results=verified,unverified,unknown > trufflehog_results.json
-    - name: Upload to DefectDojo (Demo)
-      if: always()
-      run: |
-        if [ -f "trufflehog_results.json" ]; then
-            curl -X POST "https://demo.defectdojo.org" \
-            -H "Authorization: Token 548afd6fab3bea9794a41b31da0e9404f733e222" \
-            -F "active=true" \
-            -F "verified=false" \
-            -F "scan_type=Trufflehog Scan" \
-            -F "product_name=cicdpoc" \
-            -F "engagement_name=Security Scan Demo" \
-            -F "file=@trufflehog_results.json"
-        else
-            echo "No vulnerabilities were identified"
-            exit 1
-        fi
+      with:
+        path: ./
+        base: ""
+        head: ${{ github.ref_name }}
+        extra_args: --results=verified,unverified,unknown --json
+  upload-results:
+    needs: secret-scanning 
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Load TruffleHog Logs
+        run: |
+          gh run view ${{ github.run_id }} --log | grep '^{' > results.json
+          curl -X POST "https://demo.defectdojo.org" \
+          -H "Authorization: Token ${{ secrets.DD_TOKEN }}" \
+          -F "scan_type=Trufflehog Scan" \
+          -F "product_name=cicdpoc" \
+          -F "file=@results.json"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   build-and-deploy:
     needs: secret-scanning
     runs-on: ubuntu-latest
