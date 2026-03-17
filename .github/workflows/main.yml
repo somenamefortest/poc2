@@ -39,7 +39,8 @@ jobs:
           "verified": false,
           "numerical_severity": "S0",
           "product": 5, 
-          "test": 36
+          "test": 36,
+          "found_by": [102]
         }'
   build-and-deploy:
     needs: secret-scanning
