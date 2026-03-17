@@ -1,7 +1,7 @@
 import React from 'react';
 
 const UnderDevelopment = () => {
-const apikey = "AKIAIMNO789ABCDEF012";
+const awskey = "AKIAIMNO789ABCDEF012";
 
   return (
     <div 
