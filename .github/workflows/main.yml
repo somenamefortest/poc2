@@ -22,7 +22,7 @@ jobs:
         path: ./
         base: ""
         head: ${{ github.ref_name }}
-        extra_args: --results=verified,unverified,unknown
+        extra_args: --results=verified,unverified,unknown --json > trufflehog_results.json
     - name: Upload to DefectDojo (Demo)
       if: always()
       run: |
