@@ -9,6 +9,33 @@ permissions:
   id-token: write
 
 jobs:
+  vulnerability-assessment:
+    runs-on: ubuntu-latest  # <--- Essential!
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Scan Old Ubuntu
+        uses: aquasecurity/trivy-action@master
+        continue-on-error: true
+        with:
+          image-ref: 'ubuntu:14.04'
+          format: 'json'
+          output: 'trivy-results.json'
+      - name: Create findings to DefectDojo
+        if: always()
+        run: |
+          if [ -s trivy-results.json ]; then
+            curl -v -X POST "https://demo.defectdojo.org/api/v2/import-scan" \
+            -H "Authorization: Token 6709ec1a311f350ff8d46f53158228f4ac2b567d" \
+            -F "active=true" \
+            -F "verified=false" \
+            -F "scan_type=Trivy Scan" \
+            -F "product_name=cicdpoc" \
+            -F "engagement_name=OS Security Scan" \
+            -F "file=@trivy-results.json"
+          else
+            echo "No vulnerabilities were identified"
+          fi
   secret-scanning:
     runs-on: ubuntu-latest
     steps:
