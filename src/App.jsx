@@ -1,7 +1,7 @@
 import React from 'react';
 
 const UnderDevelopment = () => {
-const apikey = "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe";
+const apikey = "";
 
   return (
     <div 
