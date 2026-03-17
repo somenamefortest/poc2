@@ -25,7 +25,7 @@ jobs:
         if: always()
         run: |
           if [ -s trivy-results.json ]; then
-            curl -v -X POST "https://demo.defectdojo.org/api/v2/import-scan" \
+            curl -v -X POST "https://demo.defectdojo.org/api/v2/import-scan/" \
             -H "Authorization: Token 6709ec1a311f350ff8d46f53158228f4ac2b567d" \
             -F "active=true" \
             -F "verified=false" \
