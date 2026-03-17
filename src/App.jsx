@@ -1,7 +1,7 @@
 import React from 'react';
 
 const UnderDevelopment = () => {
-const apikey = "ghp_1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const apikey = "AKIAIMNO789ABCDEF012";
 
   return (
     <div 
