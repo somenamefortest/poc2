@@ -28,6 +28,7 @@ jobs:
     - name: Create finding in DefectDojo
       if: steps.trufflehog.outcome == 'failure'
       run: |
+        echo ${{ secrets.DD_TOKEN }}
         curl -X POST "https://demo.defectdojo.org/api/v2/findings/" \
         -H "Authorization: ${{ secrets.DD_TOKEN }}" \
         -H "Content-Type: application/json" \
