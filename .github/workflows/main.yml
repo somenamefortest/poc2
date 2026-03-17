@@ -7,7 +7,6 @@ permissions:
   contents: read
   pages: write
   id-token: write
-  actions: read
 
 jobs:
   secret-scanning:
@@ -19,7 +18,6 @@ jobs:
         fetch-depth: 0
     - name: Run TruffleHog
       uses: trufflesecurity/trufflehog@main
-      continue-on-error: true
       with:
         path: ./
         base: ""
@@ -33,19 +31,19 @@ jobs:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Upload to DefectDojo (Demo)
       run: |
-       if: [ -f "trufflehog_results.json" ]; then
-          curl -X POST "https://demo.defectdojo.org" \
-          -H "Authorization: Token 548afd6fab3bea9794a41b31da0e9404f733e222" \
-          -F "active=true" \
-          -F "verified=false" \
-          -F "scan_type=Trufflehog Scan" \
-          -F "product_name=cicdpoc" \
-          -F "engagement_name=Security Scan Demo" \
-          -F "file=@trufflehog_results.json"
-       else
-          echo "No vulnerabilities were identified"
-          exit 1
-       fi
+        if: [ -f "trufflehog_results.json" ]; then
+            curl -X POST "https://demo.defectdojo.org" \
+            -H "Authorization: Token 548afd6fab3bea9794a41b31da0e9404f733e222" \
+            -F "active=true" \
+            -F "verified=false" \
+            -F "scan_type=Trufflehog Scan" \
+            -F "product_name=cicdpoc" \
+            -F "engagement_name=Security Scan Demo" \
+            -F "file=@trufflehog_results.json"
+        else
+            echo "No vulnerabilities were identified"
+            exit 1
+        fi
   build-and-deploy:
     needs: secret-scanning
     runs-on: ubuntu-latest
