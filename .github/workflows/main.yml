@@ -29,7 +29,7 @@ jobs:
       if: steps.trufflehog.outcome == 'failure'
       run: |
         curl -X POST "https://demo.defectdojo.org/api/v2/findings/" \
-        -H "Authorization: Token ${{ secrets.DD_TOKEN }}" \
+        -H "Authorization: ${{ secrets.DD_TOKEN }}" \
         -H "Content-Type: application/json" \
         -d @- <<EOF
         {
