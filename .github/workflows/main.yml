@@ -10,11 +10,11 @@ permissions:
 
 jobs:
   vulnerability-assessment:
-    runs-on: ubuntu-latest  # <--- Essential!
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v4
-      - name: Scan Old Ubuntu
+      - name: Run Trivy
         uses: aquasecurity/trivy-action@master
         continue-on-error: true
         with:
@@ -22,7 +22,7 @@ jobs:
           format: 'json'
           output: 'trivy-results.json'
           severity: 'UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL'
-          ignore-unfixed: false # Show everything, even if there's no patch
+          ignore-unfixed: false
           hide-progress: false
       - name: Create findings to DefectDojo
         if: always()
@@ -33,8 +33,8 @@ jobs:
             -F "active=true" \
             -F "verified=false" \
             -F "scan_type=Trivy Scan" \
-            -F "product_name=cicdpoc" \
-            -F "engagement_name=poc_eng" \
+            -F "product=5" \
+            -F "engagement=19" \
             -F "file=@trivy-results.json"
             exit 1
           else
