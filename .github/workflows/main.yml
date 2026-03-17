@@ -21,6 +21,9 @@ jobs:
           image-ref: 'ubuntu:14.04'
           format: 'json'
           output: 'trivy-results.json'
+          severity: 'UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL'
+          ignore-unfixed: false # Show everything, even if there's no patch
+          hide-progress: false
       - name: Create findings to DefectDojo
         if: always()
         run: |
@@ -32,7 +35,6 @@ jobs:
             -F "scan_type=Trivy Scan" \
             -F "product_name=cicdpoc" \
             -F "engagement_name=poc_eng" \
-            -F "test_name=poc_test" \
             -F "file=@trivy-results.json"
             exit 1
           else
