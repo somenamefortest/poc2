@@ -17,6 +17,7 @@ jobs:
       with:
         fetch-depth: 0
     - name: Run TruffleHog
+      id: trufflehog
       uses: trufflesecurity/trufflehog@main
       continue-on-error: true
       with:
@@ -24,26 +25,24 @@ jobs:
         base: ""
         head: ${{ github.ref_name }}
         extra_args: --results=verified,unverified,unknown --json
-    - name: Upload to DefectDojo (Demo)
-      if: always()
+    - name: Create finding in DefectDojo
+      if: steps.trufflehog.outcome == 'failure'
       run: |
-        RESULTS=$(gh run view ${{ github.run_id }} --log-failed | grep '^{"SourceMetadata"')
-
-        if [ -n "$RESULTS" ]; then
-          # 2. Send the variable content as a file using '-' and a pipe
-          echo "$RESULTS" | curl -X POST "https://demo.defectdojo.org" \
-          -H "Authorization: Token ${{ secrets.DD_TOKEN }}" \
-          -F "active=true" \
-          -F "verified=false" \
-          -F "scan_type=Trufflehog Scan" \
-          -F "product_name=cicdpoc" \
-          -F "engagement_name=Security Scan POC" \
-          -F "file=@-;filename=trufflehog.json" # The '-' tells curl to read from the pipe
-        else
-          echo "No findings detected."
-        fi
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        curl -X POST "https://demo.defectdojo.org" \
+        -H "Authorization: Token ${{ secrets.DD_TOKEN }} " \
+        -H "Content-Type: application/json" \
+        -d @- <<EOF
+        {
+          "title": "Secrets identified in ${{ github.event.repository.name }}",
+          "description": "TruffleHog detected potential secrets in the latest push to the ${{ github.ref_name }} branch. Manual review is required immediately.",
+          "severity": "Critical",
+          "active": true,
+          "verified": false,
+          "numerical_severity": "S0",
+          "product": 1, 
+          "engagement": 1
+        }
+        EOF
   build-and-deploy:
     needs: secret-scanning
     runs-on: ubuntu-latest
