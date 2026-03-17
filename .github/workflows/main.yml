@@ -31,7 +31,7 @@ jobs:
             -F "verified=false" \
             -F "scan_type=Trivy Scan" \
             -F "product_name=cicdpoc" \
-            -F "engagement_name=OS Security Scan" \
+            -F "engagement_name=test_eng" \
             -F "file=@trivy-results.json"
             exit 1
           else
