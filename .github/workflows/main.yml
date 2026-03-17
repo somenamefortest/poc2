@@ -21,6 +21,7 @@ jobs:
       with:
         extra_args: --results=verified,unverified,unknown
   build-and-deploy:
+    needs: secret-scanning
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
