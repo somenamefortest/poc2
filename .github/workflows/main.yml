@@ -27,7 +27,7 @@ jobs:
     - name: Capture Results to File
       if: always()
       run: |
-        gh run view ${{ github.run_id }} --log | grep '^{' > trufflehog_results.json || true
+        gh run view ${{ github.run_id }} --log | grep '^{' || true
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Upload to DefectDojo (Demo)
