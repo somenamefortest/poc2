@@ -22,7 +22,6 @@ jobs:
           format: 'json'
           output: 'trivy-results.json'
           vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH,MEDIUM,LOW,INFO'
           ignore-unfixed: false
       - name: Create findings to DefectDojo
         if: always()
