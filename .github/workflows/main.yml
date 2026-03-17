@@ -25,6 +25,7 @@ jobs:
         head: ${{ github.ref_name }}
         extra_args: --results=verified,unverified,unknown --json
     - name: Capture Results to File
+      if: always()
       run: |
         gh run view ${{ github.run_id }} --log | grep '^{' > trufflehog_results.json || true
       env:
