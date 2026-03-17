@@ -24,23 +24,26 @@ jobs:
         base: ""
         head: ${{ github.ref_name }}
         extra_args: --results=verified,unverified,unknown --json
-  upload-results:
-    needs: secret-scanning 
-    if: always()
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-      - name: Load TruffleHog Logs
-        run: |
-          gh run view ${{ github.run_id }} --log | grep '^{' > results.json
-          curl -X POST "https://demo.defectdojo.org" \
+    - name: Upload to DefectDojo (Demo)
+      if: always()
+      run: |
+        RESULTS=$(gh run view ${{ github.run_id }} --log-step "Run TruffleHog" | grep '^{"SourceMetadata"')
+
+        if [ -n "$RESULTS" ]; then
+          # 2. Send the variable content as a file using '-' and a pipe
+          echo "$RESULTS" | curl -X POST "https://demo.defectdojo.org" \
           -H "Authorization: Token ${{ secrets.DD_TOKEN }}" \
+          -F "active=true" \
+          -F "verified=false" \
           -F "scan_type=Trufflehog Scan" \
           -F "product_name=cicdpoc" \
-          -F "file=@results.json"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          -F "engagement_name=Security Scan POC" \
+          -F "file=@-;filename=trufflehog.json" # The '-' tells curl to read from the pipe
+        else
+          echo "No findings detected."
+        fi
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   build-and-deploy:
     needs: secret-scanning
     runs-on: ubuntu-latest
