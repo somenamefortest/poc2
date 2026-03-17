@@ -32,8 +32,7 @@ jobs:
         curl -X POST "https://demo.defectdojo.org/api/v2/findings/" \
         -H "Authorization: Token ${{ secrets.DD_TOKEN }}" \
         -H "Content-Type: application/json" \
-        -d @- <<EOF
-        {
+        -d '{
           "title": "Secrets identified in ${{ github.event.repository.name }}",
           "description": "TruffleHog detected potential secrets in the latest push to the ${{ github.ref_name }} branch. Manual review is required immediately.",
           "severity": "Critical",
@@ -42,8 +41,7 @@ jobs:
           "numerical_severity": "S0",
           "product": 5, 
           "test": 36
-        }
-        EOF
+        }'
   build-and-deploy:
     needs: secret-scanning
     runs-on: ubuntu-latest
