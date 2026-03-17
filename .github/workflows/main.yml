@@ -22,25 +22,25 @@ jobs:
         path: ./
         base: ""
         head: ${{ github.ref_name }}
-        extra_args: --results=verified,unverified,unknown --json > trufflehog_results.json
+        extra_args: --results=verified,unverified,unknown --json
+    - name: Capture Results to File
+      if: always()
+      # This step takes the logs from the previous step and saves them
+      run: |
+        gh run view ${{ github.run_id }} --log-step "Run TruffleHog" > trufflehog_results.json
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Upload to DefectDojo (Demo)
       if: always()
       run: |
-        if [ -f "trufflehog_results.json" ]; then
-          curl -X POST "https://demo.defectdojo.org" \
-          -H "Authorization: Token 548afd6fab3bea9794a41b31da0e9404f733e222" \
-          -F "active=true" \
-          -F "verified=false" \
-          -F "scan_type=Trufflehog Scan" \
-          -F "product_name=cicdpoc" \
-          -F "engagement_name=Security Scan Demo" \
-          -F "file=@trufflehog_results.json" \
-          -F "close_old_findings=false" \
-          -F "push_to_jira=false"
-        else
-          echo "No results file found to upload!"
-          exit 1
-        fi
+        curl -X POST "https://demo.defectdojo.org" \
+        -H "Authorization: Token 548afd6fab3bea9794a41b31da0e9404f733e222" \
+        -F "active=true" \
+        -F "verified=false" \
+        -F "scan_type=Trufflehog Scan" \
+        -F "product_name=cicdpoc" \
+        -F "engagement_name=Security Scan Demo" \
+        -F "file=@trufflehog_results.json"
   build-and-deploy:
     needs: secret-scanning
     runs-on: ubuntu-latest
