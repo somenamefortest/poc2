@@ -21,9 +21,9 @@ jobs:
           image-ref: 'ubuntu:14.04'
           format: 'json'
           output: 'trivy-results.json'
-          severity: 'UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL'
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH,MEDIUM,LOW,INFO'
           ignore-unfixed: false
-          hide-progress: false
       - name: Create findings to DefectDojo
         if: always()
         run: |
