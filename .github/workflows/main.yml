@@ -27,7 +27,7 @@ jobs:
       if: always()
       # This step takes the logs from the previous step and saves them
       run: |
-        gh run view ${{ github.run_id }} --log-step "Run TruffleHog" > trufflehog_results.json
+        gh run view ${{ github.run_id }} --log "Run TruffleHog" > trufflehog_results.json
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Upload to DefectDojo (Demo)
