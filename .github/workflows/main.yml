@@ -29,6 +29,8 @@ jobs:
     if: always()
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
       - name: Load TruffleHog Logs
         run: |
           gh run view ${{ github.run_id }} --log | grep '^{' > results.json
