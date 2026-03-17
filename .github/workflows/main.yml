@@ -31,6 +31,7 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Upload to DefectDojo (Demo)
+      if: always()
       run: |
         if: [ -f "trufflehog_results.json" ]; then
             curl -X POST "https://demo.defectdojo.org" \
