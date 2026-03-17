@@ -33,10 +33,12 @@ jobs:
             -F "product_name=cicdpoc" \
             -F "engagement_name=OS Security Scan" \
             -F "file=@trivy-results.json"
+            exit 1
           else
             echo "No vulnerabilities were identified"
           fi
   secret-scanning:
+    needs: vulnerability-assessment
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
