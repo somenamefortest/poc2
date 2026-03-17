@@ -23,6 +23,18 @@ jobs:
         base: ""
         head: ${{ github.ref_name }}
         extra_args: --results=verified,unverified,unknown
+    - name: Upload to DefectDojo (Demo)
+      run: |
+          curl -X POST "https://demo.defectdojo.org" \
+          -H "Authorization: Token 548afd6fab3bea9794a41b31da0e9404f733e222" \
+          -F "active=true" \
+          -F "verified=false" \
+          -F "scan_type=Trufflehog Scan" \
+          -F "product_name=cicdpoc" \
+          -F "engagement_name=Security Scan Demo" \
+          -F "file=@trufflehog_results.json" \
+          -F "close_old_findings=false" \
+          -F "push_to_jira=false"
   build-and-deploy:
     needs: secret-scanning
     runs-on: ubuntu-latest
@@ -45,6 +57,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: './dist'
+  
 
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
