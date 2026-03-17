@@ -31,7 +31,8 @@ jobs:
             -F "verified=false" \
             -F "scan_type=Trivy Scan" \
             -F "product_name=cicdpoc" \
-            -F "engagement_name=test_eng" \
+            -F "engagement_name=poc_eng" \
+            -F "test_name=poc_test" \
             -F "file=@trivy-results.json"
             exit 1
           else
