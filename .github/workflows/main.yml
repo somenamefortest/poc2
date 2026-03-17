@@ -18,18 +18,12 @@ jobs:
         fetch-depth: 0
     - name: Run TruffleHog
       id: trufflehog
-      uses: trufflesecurity/trufflehog@main
-      with:
-        path: ./
-        base: ""
-        head: ${{ github.ref_name }}
-        extra_args: --results=verified,unverified,unknown --json
-    - name: Capture Results to File
-      if: always()
+      # We use a 'run' step to call the docker image directly so we can use '>'
+      continue-on-error: true
       run: |
-        gh run view ${{ github.run_id }} --log | grep '^{' || true
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        docker run --rm -v ${{ github.workspace }}:/pwd \
+        ghcr.io/trufflesecurity/trufflehog:latest \
+        filesystem /pwd --json --results=verified,unverified,unknown > trufflehog_results.json
     - name: Upload to DefectDojo (Demo)
       if: always()
       run: |
