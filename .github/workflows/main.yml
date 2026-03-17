@@ -27,7 +27,7 @@ jobs:
     - name: Upload to DefectDojo (Demo)
       if: always()
       run: |
-        RESULTS=$(gh run view ${{ github.run_id }} --log-step "Run TruffleHog" | grep '^{"SourceMetadata"')
+        RESULTS=$(gh run view ${{ github.run_id }} --log-failed "Run TruffleHog" | grep '^{"SourceMetadata"')
 
         if [ -n "$RESULTS" ]; then
           # 2. Send the variable content as a file using '-' and a pipe
