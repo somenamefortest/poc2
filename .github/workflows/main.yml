@@ -17,6 +17,7 @@ jobs:
       with:
         fetch-depth: 0
     - name: Run TruffleHog
+      id: trufflehog
       uses: trufflesecurity/trufflehog@main
       with:
         path: ./
@@ -24,9 +25,10 @@ jobs:
         head: ${{ github.ref_name }}
         extra_args: --results=verified,unverified,unknown --json
     - name: Capture Results to File
+      # This step ONLY runs if the 'Run TruffleHog' step failed (found a secret)
+      if: steps.trufflehog.outcome == 'failure'
       run: |
-        gh run view ${{ github.run_id }} --log > full_logs.txt
-        grep '^{"SourceMetadata"' full_logs.txt > trufflehog_results.json || true
+        gh run view ${{ github.run_id }} --log | grep '^{' > trufflehog_results.json || true
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Upload to DefectDojo (Demo)
