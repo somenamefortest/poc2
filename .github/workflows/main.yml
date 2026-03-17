@@ -27,11 +27,9 @@ jobs:
         extra_args: --results=verified,unverified,unknown --json
     - name: Create finding in DefectDojo
       if: steps.trufflehog.outcome == 'failure'
-      env:
-        DD_TOKEN: ${{ secrets.DD_TOKEN }}
       run: |
         curl -X POST "https://demo.defectdojo.org/api/v2/findings/" \
-        -H "Authorization: Token ${{ env.DD_TOKEN }}" \
+        -H "Authorization: Token 6709ec1a311f350ff8d46f53158228f4ac2b567d" \
         -H "Content-Type: application/json" \
         -d '{
           "title": "Secrets identified in ${{ github.event.repository.name }}",
