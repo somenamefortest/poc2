@@ -24,7 +24,9 @@ jobs:
         head: ${{ github.ref_name }}
         extra_args: --results=verified,unverified,unknown
     - name: Upload to DefectDojo (Demo)
+      if: always()
       run: |
+        if [ -f "trufflehog_results.json" ]; then
           curl -X POST "https://demo.defectdojo.org" \
           -H "Authorization: Token 548afd6fab3bea9794a41b31da0e9404f733e222" \
           -F "active=true" \
@@ -35,6 +37,10 @@ jobs:
           -F "file=@trufflehog_results.json" \
           -F "close_old_findings=false" \
           -F "push_to_jira=false"
+        else
+          echo "No results file found to upload!"
+          exit 1
+        fi
   build-and-deploy:
     needs: secret-scanning
     runs-on: ubuntu-latest
