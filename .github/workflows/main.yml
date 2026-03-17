@@ -19,6 +19,9 @@ jobs:
     - name: Run TruffleHog
       uses: trufflesecurity/trufflehog@main
       with:
+        path: ./
+        base: ${{ github.event.repository.default_branch }}
+        head: HEAD
         extra_args: --results=verified,unverified,unknown
   build-and-deploy:
     needs: secret-scanning
